@@ -4,16 +4,15 @@ export interface Order {
   id: string
   number: string
   date: string
-  status: 'new' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
+  shippingDeadline?: string
   amount: number
   itemsCount: number
+  status: 'new' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
   customer: {
     name: string
     email?: string
     phone?: string
   }
-  shippingDeadline?: string
-  items: OrderItem[]
 }
 
 export interface OrderItem {
@@ -30,21 +29,17 @@ export interface OrderItem {
 
 export interface Product {
   id: string
+  name: string
   sellerSku: string
   lamodaSku?: string
-  name: string
-  description: string
-  category: string
-  brand: string
   price: number
   discountPrice?: number
-  images: string[]
-  status: 'draft' | 'moderation' | 'active' | 'inactive' | 'rejected'
   inStock: number
-  sizes?: ProductSize[]
-  attributes: ProductAttribute[]
-  createdAt: string
-  updatedAt: string
+  status: 'draft' | 'moderation' | 'active' | 'inactive' | 'rejected'
+  images?: string[]
+  brand?: string
+  category?: string
+  description?: string
 }
 
 export interface ProductSize {
@@ -145,4 +140,72 @@ export type TabItem = {
   name: string
   key: string
   count?: number
+}
+
+export interface CardData {
+  id: string
+  title: string
+  subtitle?: string
+  description?: string
+  badge?: string
+  status?: string
+  onClick?: () => void
+}
+
+export interface DataPoint {
+  name: string
+  value: number
+  change?: number
+  color?: string
+}
+
+export interface StatsData {
+  title: string
+  value: string
+  change?: {
+    value: string
+    type: 'increase' | 'decrease' | 'neutral'
+  }
+  icon?: React.ReactNode
+  color?: 'blue' | 'green' | 'yellow' | 'red' | 'purple'
+}
+
+export interface FilterItem {
+  key: string
+  label: string
+  value: string | number | boolean
+  type: 'text' | 'select' | 'checkbox' | 'date' | 'range'
+  options?: Array<{ label: string; value: string | number }>
+}
+
+export interface Column {
+  key: string
+  label: string
+  sortable?: boolean
+  width?: string
+  render?: (value: unknown, row: unknown) => React.ReactNode
+}
+
+export interface SidebarItem {
+  title: string
+  subtitle?: string
+  badge?: string
+  onClick?: () => void
+}
+
+export interface NotificationData {
+  id: string
+  title: string
+  message: string
+  type: 'info' | 'success' | 'warning' | 'error'
+  timestamp: Date
+  read: boolean
+}
+
+export interface UserProfile {
+  name: string
+  email: string
+  role: string
+  avatar?: string
+  company?: string
 } 

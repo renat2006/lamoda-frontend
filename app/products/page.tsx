@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Download, ChevronRight } from "lucide-react"
+import { Download, Plus, Search, Grid, List } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/components/ui"
 import { 
@@ -13,9 +13,12 @@ import {
   EmptyIcon,
   SidebarPanel,
   InfoCard,
-  SidebarList
+  SidebarList,
+  AnimatedCard
 } from "@/components/shared"
-import { cn } from "@/lib/utils"
+import { ProductCard, MobileCardList } from "@/components/shared/mobile-card"
+import { MobileFilters, productFilterSections } from "@/components/shared/mobile-filters"
+import { cn, isTouchDevice } from "@/lib/utils"
 import type { TabItem } from "@/types/lamoda"
 import { mockProducts } from "@/lib/mock-data"
 
@@ -97,6 +100,44 @@ const productColumns = [
 export default function ProductsPage() {
   const [activeTab, setActiveTab] = useState("all")
   const [showSidebar] = useState(true)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>(() => 
+    isTouchDevice() ? 'cards' : 'table'
+  )
+
+  const filteredProducts = mockProducts.filter(product => {
+    const matchesSearch = !searchQuery || 
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.sellerSku.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.lamodaSku?.toLowerCase().includes(searchQuery.toLowerCase())
+    
+    const matchesTab = activeTab === 'all' || 
+      (activeTab === 'live' && product.status === 'active') ||
+      (activeTab === 'hidden' && product.status === 'inactive') ||
+      (activeTab === 'out-of-stock' && product.inStock === 0) ||
+      (activeTab === 'photo-session' && product.status === 'moderation')
+    
+    return matchesSearch && matchesTab
+  })
+
+  const handleRefresh = async () => {
+    setLoading(true)
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    setLoading(false)
+  }
+
+  const handleProductView = (product: typeof mockProducts[0]) => {
+    console.log("Просмотр товара:", product)
+  }
+
+  const handleProductEdit = (product: typeof mockProducts[0]) => {
+    console.log("Редактирование товара:", product)
+  }
+
+  const handleProductDelete = (product: typeof mockProducts[0]) => {
+    console.log("Удаление товара:", product)
+  }
 
   const sidebarItems = [
     {
@@ -112,7 +153,7 @@ export default function ProductsPage() {
 
   const sidebar = (
     <SidebarPanel title="Для вас">
-      <div className="space-y-8">
+      <div className="space-y-6 md:space-y-8">
         <InfoCard
           title="Больше продаж с рекламой на Lamoda"
           description="Продвигайте ваши товары от 1000 рублей в день. Без оплаты за показы — вы платите только за посещения страницы товара."
@@ -133,38 +174,94 @@ export default function ProductsPage() {
     </SidebarPanel>
   )
 
+  const emptyState = (
+    <EmptyState
+      icon={<EmptyIcon />}
+      title="Товары не найдены"
+      description="Попробуйте изменить условия поиска или добавить новый товар"
+      action={
+        <Button>
+          <Plus className="h-4 w-4 mr-2" />
+          Добавить товар
+        </Button>
+      }
+    />
+  )
+
   return (
     <MobileLayout showSidebar={showSidebar} sidebar={sidebar}>
-      <PageWrapper>
-          {/* Page header */}
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-semibold text-foreground">
-              Управление товарами Россия
-            </h1>
-            
-            <div className="flex items-center gap-4">
-              <Button variant="outline" size="sm">
-                Добавить
-              </Button>
-              <Button variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
-                Экспорт
-              </Button>
-              <Button size="sm">
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+      <PageWrapper maxWidth="2xl">
+        {/* Header */}
+        <AnimatedCard className="mb-6">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+                  Управление товарами
+                </h1>
+                <p className="text-sm md:text-base text-muted-foreground mt-1">
+                  {filteredProducts.length} товаров найдено
+                </p>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                {/* View toggle */}
+                <div className="hidden md:flex items-center gap-1 bg-muted rounded-lg p-1">
+                  <Button
+                    variant={viewMode === 'cards' ? 'default' : 'ghost'}
+                    size="sm"
+                    className="h-8 px-3"
+                    onClick={() => setViewMode('cards')}
+                  >
+                    <Grid className="h-4 w-4 mr-1" />
+                    Карточки
+                  </Button>
+                  <Button
+                    variant={viewMode === 'table' ? 'default' : 'ghost'}
+                    size="sm"
+                    className="h-8 px-3"
+                    onClick={() => setViewMode('table')}
+                  >
+                    <List className="h-4 w-4 mr-1" />
+                    Таблица
+                  </Button>
+                </div>
+
+                <Button variant="outline" size="sm" className="h-9 md:h-10">
+                  <Plus className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Добавить</span>
+                </Button>
+                <Button variant="outline" size="sm" className="h-9 md:h-10">
+                  <Download className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Экспорт</span>
+                </Button>
+              </div>
+            </div>
+
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Поиск по названию, SKU, бренду..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-input rounded-xl bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all"
+              />
             </div>
           </div>
+        </AnimatedCard>
 
-          {/* Tabs */}
-          <div className="border-b border-border mb-6">
-            <nav className="flex space-x-8">
+        {/* Tabs */}
+        <AnimatedCard delay={200} className="mb-6">
+          <div className="border-b border-border">
+            <nav className="flex space-x-4 md:space-x-8 overflow-x-auto scrollbar-hide">
               {productTabs.map((tab) => (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
                   className={cn(
-                    "py-2 px-1 border-b-2 font-medium text-sm transition-colors",
+                    "py-3 px-1 border-b-2 font-medium text-sm md:text-base transition-colors whitespace-nowrap flex-shrink-0",
                     activeTab === tab.key
                       ? "border-primary text-primary"
                       : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground"
@@ -180,30 +277,83 @@ export default function ProductsPage() {
               ))}
             </nav>
           </div>
+        </AnimatedCard>
 
-          {/* Filters */}
-          <Filters
-            searchPlaceholder="Например: Наименование товара, Seller SKU, Parent SKU, Lamoda SKU, EAN или бренд"
-            className="mb-6"
-          />
-
-          {/* Data table */}
-          {mockProducts.length > 0 ? (
-            <DataTable
-              data={mockProducts}
-              columns={productColumns}
-              onRowClick={(product) => {
-                console.log("Открыть товар:", product)
-              }}
+        {/* Filters */}
+        <AnimatedCard delay={300} className="mb-6">
+          {isTouchDevice() ? (
+            <MobileFilters
+              sections={productFilterSections}
+              onApply={(filters) => console.log('Applied filters:', filters)}
+              onReset={() => console.log('Reset filters')}
             />
           ) : (
-            <div className="border border-border rounded-lg bg-background min-h-[400px] flex items-center justify-center">
-              <EmptyState
-                icon={<EmptyIcon />}
-                title="Упс, здесь ничего нет"
-              />
+            <Filters
+              searchPlaceholder="Дополнительные фильтры (статус, категория, цена...)"
+              onSearch={() => {}}
+            />
+          )}
+        </AnimatedCard>
+
+        {/* Content */}
+        <AnimatedCard delay={400}>
+          {viewMode === 'cards' || window.innerWidth < 768 ? (
+            /* Mobile Cards */
+            <MobileCardList
+              items={filteredProducts}
+              renderCard={(product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onView={handleProductView}
+                  onEdit={handleProductEdit}
+                  onDelete={handleProductDelete}
+                />
+              )}
+              onRefresh={handleRefresh}
+              loading={loading}
+              emptyState={emptyState}
+              className="space-y-3"
+            />
+          ) : (
+            /* Desktop Table */
+            <div className="overflow-hidden rounded-xl border border-border bg-background shadow-sm">
+              {filteredProducts.length > 0 ? (
+                <DataTable
+                  data={filteredProducts}
+                  columns={productColumns}
+                  onRowClick={handleProductView}
+                />
+              ) : (
+                <div className="flex items-center justify-center min-h-[400px]">
+                  {emptyState}
+                </div>
+              )}
             </div>
           )}
+        </AnimatedCard>
+
+        {/* Quick Stats */}
+        <AnimatedCard delay={600} className="mt-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-card border border-border rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-green-600">{mockProducts.filter(p => p.status === 'active').length}</div>
+              <div className="text-sm text-muted-foreground">Активных</div>
+            </div>
+            <div className="bg-card border border-border rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-yellow-600">{mockProducts.filter(p => p.status === 'moderation').length}</div>
+              <div className="text-sm text-muted-foreground">На модерации</div>
+            </div>
+            <div className="bg-card border border-border rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-blue-600">{mockProducts.filter(p => p.status === 'draft').length}</div>
+              <div className="text-sm text-muted-foreground">Черновиков</div>
+            </div>
+            <div className="bg-card border border-border rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-red-600">{mockProducts.filter(p => p.inStock === 0).length}</div>
+              <div className="text-sm text-muted-foreground">Нет в наличии</div>
+            </div>
+          </div>
+        </AnimatedCard>
       </PageWrapper>
     </MobileLayout>
   )

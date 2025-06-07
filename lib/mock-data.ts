@@ -4,123 +4,153 @@ import type { Order, Product, Analytics } from "@/types/lamoda"
 export const mockOrders: Order[] = [
   {
     id: "1",
-    number: "LM12345",
-    date: "2024-06-07",
+    number: "LAM-2024-001",
+    date: "15.01.2024",
+    shippingDeadline: "18.01.2024",
+    amount: 15420,
+    itemsCount: 3,
     status: "new",
-    amount: 4500,
-    itemsCount: 2,
     customer: {
       name: "Анна Петрова",
-      email: "anna@example.com",
-      phone: "+7 900 123-45-67"
-    },
-    shippingDeadline: "2024-06-10",
-    items: [
-      {
-        id: "1",
-        productId: "p1",
-        sku: "SHOE001",
-        name: "Кроссовки Nike Air Max",
-        size: "40",
-        color: "Белый",
-        quantity: 1,
-        price: 3000,
-        image: "/images/product1.jpg"
-      },
-      {
-        id: "2", 
-        productId: "p2",
-        sku: "TSHIRT001",
-        name: "Футболка Adidas",
-        size: "M",
-        color: "Черный",
-        quantity: 1,
-        price: 1500,
-        image: "/images/product2.jpg"
-      }
-    ]
+      email: "anna.petrova@example.com",
+      phone: "+7 (999) 123-45-67"
+    }
   },
   {
     id: "2",
-    number: "LM12346",
-    date: "2024-06-06",
+    number: "LAM-2024-002",
+    date: "15.01.2024",
+    shippingDeadline: "19.01.2024",
+    amount: 8900,
+    itemsCount: 2,
     status: "processing",
-    amount: 2800,
-    itemsCount: 1,
     customer: {
-      name: "Иван Сидоров",
-      phone: "+7 900 987-65-43"
-    },
-    shippingDeadline: "2024-06-09",
-    items: [
-      {
-        id: "3",
-        productId: "p3",
-        sku: "JACKET001",
-        name: "Куртка Zara",
-        size: "L",
-        color: "Темно-синий",
-        quantity: 1,
-        price: 2800,
-        image: "/images/product3.jpg"
-      }
-    ]
+      name: "Дмитрий Смирнов",
+      email: "dmitry.smirnov@example.com"
+    }
+  },
+  {
+    id: "3",
+    number: "LAM-2024-003",
+    date: "14.01.2024",
+    amount: 25300,
+    itemsCount: 5,
+    status: "shipped",
+    customer: {
+      name: "Елена Иванова",
+      email: "elena.ivanova@example.com",
+      phone: "+7 (985) 777-88-99"
+    }
+  },
+  {
+    id: "4",
+    number: "LAM-2024-004",
+    date: "13.01.2024",
+    amount: 12600,
+    itemsCount: 1,
+    status: "delivered",
+    customer: {
+      name: "Михаил Козлов"
+    }
+  },
+  {
+    id: "5",
+    number: "LAM-2024-005",
+    date: "12.01.2024",
+    amount: 4500,
+    itemsCount: 2,
+    status: "cancelled",
+    customer: {
+      name: "Ольга Никитина",
+      email: "olga.nikitina@example.com"
+    }
   }
 ]
 
 // Мокованные товары
 export const mockProducts: Product[] = [
   {
-    id: "p1",
-    sellerSku: "SHOE001",
-    lamodaSku: "LM-SHOE001-40",
-    name: "Кроссовки Nike Air Max 270",
-    description: "Современные кроссовки с инновационной подушкой Air Max",
-    category: "Обувь",
-    brand: "Nike",
-    price: 8990,
-    discountPrice: 6990,
-    images: ["/images/nike-air-max-1.jpg", "/images/nike-air-max-2.jpg"],
-    status: "active",
+    id: "1",
+    name: "Куртка зимняя мужская Nike",
+    sellerSku: "NIKE-JKT-001",
+    lamodaSku: "LA12345678",
+    price: 12500,
+    discountPrice: 10000,
     inStock: 15,
-    sizes: [
-      { size: "39", quantity: 3 },
-      { size: "40", quantity: 5 },
-      { size: "41", quantity: 4 },
-      { size: "42", quantity: 3 }
-    ],
-    attributes: [
-      { name: "Материал", value: "Текстиль, синтетика" },
-      { name: "Подошва", value: "Резина" },
-      { name: "Застежка", value: "Шнурки" }
-    ],
-    createdAt: "2024-05-15T10:00:00Z",
-    updatedAt: "2024-06-01T15:30:00Z"
+    status: "active",
+    brand: "Nike",
+    category: "Верхняя одежда",
+    images: ["/api/placeholder/300/300?text=Nike+Jacket"]
   },
   {
-    id: "p2",
-    sellerSku: "TSHIRT001",
-    lamodaSku: "LM-TSHIRT001-M",
-    name: "Футболка Adidas Originals",
-    description: "Классическая футболка с логотипом бренда",
-    category: "Одежда",
-    brand: "Adidas",
-    price: 2990,
-    images: ["/images/adidas-tshirt-1.jpg"],
+    id: "2", 
+    name: "Платье вечернее Zara",
+    sellerSku: "ZARA-DRS-002",
+    lamodaSku: "LA87654321",
+    price: 8900,
+    inStock: 8,
     status: "moderation",
+    brand: "Zara",
+    category: "Платья",
+    images: ["/api/placeholder/300/300?text=Zara+Dress"]
+  },
+  {
+    id: "3",
+    name: "Кроссовки Adidas Ultraboost",
+    sellerSku: "ADIDAS-SNK-003", 
+    lamodaSku: "LA11223344",
+    price: 15600,
+    discountPrice: 13200,
+    inStock: 22,
+    status: "active",
+    brand: "Adidas",
+    category: "Обувь",
+    images: ["/api/placeholder/300/300?text=Adidas+Sneakers"]
+  },
+  {
+    id: "4",
+    name: "Джинсы классические Levi's",
+    sellerSku: "LEVIS-JNS-004",
+    price: 7800,
+    inStock: 0,
+    status: "inactive",
+    brand: "Levi's", 
+    category: "Джинсы"
+  },
+  {
+    id: "5",
+    name: "Рубашка деловая Hugo Boss",
+    sellerSku: "BOSS-SHT-005",
+    lamodaSku: "LA55667788",
+    price: 18900,
+    inStock: 12,
+    status: "draft",
+    brand: "Hugo Boss",
+    category: "Рубашки",
+    images: ["/api/placeholder/300/300?text=Hugo+Boss+Shirt"]
+  },
+  {
+    id: "6",
+    name: "Сумка женская Michael Kors",
+    sellerSku: "MK-BAG-006",
+    lamodaSku: "LA99887766",
+    price: 22400,
+    discountPrice: 18700,
+    inStock: 5,
+    status: "active",
+    brand: "Michael Kors",
+    category: "Сумки",
+    images: ["/api/placeholder/300/300?text=MK+Bag"]
+  },
+  {
+    id: "7",
+    name: "Свитер вязаный H&M",
+    sellerSku: "HM-SWT-007",
+    price: 3400,
     inStock: 25,
-    sizes: [
-      { size: "S", quantity: 8 },
-      { size: "M", quantity: 10 },
-      { size: "L", quantity: 7 }
-    ],
-    attributes: [
-      { name: "Материал", value: "100% хлопок" },
-      { name: "Крой", value: "Прямой" },
-      { name: "Рукав", value: "Короткий" }
-    ],
-    createdAt: "2024-06-01T12:00:00Z",
-    updatedAt: "2024-06-05T09:15:00Z"
+    status: "rejected",
+    brand: "H&M",
+    category: "Свитеры"
   }
 ]
 
