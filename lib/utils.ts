@@ -55,5 +55,4 @@ export function throttle<T extends (...args: unknown[]) => unknown>(
       func(...args)
     }
   }
-}
-
+} 

@@ -1,13 +1,12 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef } from "react"
 import Image from "next/image"
 import { 
   ChevronRight, 
   MoreVertical, 
   Package, 
   ShoppingCart,
-  Eye,
   Edit,
   Trash2,
   Star,

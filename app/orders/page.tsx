@@ -211,7 +211,7 @@ export default function OrdersPage() {
 
         {/* Content */}
         <AnimatedCard delay={400}>
-          {viewMode === 'cards' || window.innerWidth < 768 ? (
+          {viewMode === 'cards' || (typeof window !== 'undefined' && window.innerWidth < 768) ? (
             /* Mobile Cards */
             <MobileCardList
               items={filteredOrders}

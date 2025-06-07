@@ -9,11 +9,7 @@ import {
   Calendar,
   DollarSign,
   Tag,
-  Star,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  XCircle
+  CheckCircle
 } from "lucide-react"
 import { Button } from "@/components/ui"
 import { cn, hapticFeedback } from "@/lib/utils"
@@ -37,7 +33,7 @@ interface FilterSection {
 
 interface MobileFiltersProps {
   sections: FilterSection[]
-  onApply: (filters: Record<string, any>) => void
+  onApply: (filters: Record<string, unknown>) => void
   onReset: () => void
   className?: string
 }
@@ -123,7 +119,7 @@ export const productFilterSections: FilterSection[] = [
 
 export function MobileFilters({ sections, onApply, onReset, className }: MobileFiltersProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const [filters, setFilters] = useState<Record<string, any>>({})
+  const [filters, setFilters] = useState<Record<string, unknown>>({})
   const [expandedSections, setExpandedSections] = useState<string[]>([])
 
   const activeFiltersCount = Object.keys(filters).filter(key => 
@@ -133,7 +129,7 @@ export function MobileFilters({ sections, onApply, onReset, className }: MobileF
     (Array.isArray(filters[key]) ? filters[key].length > 0 : true)
   ).length
 
-  const handleFilterChange = (sectionId: string, value: any) => {
+  const handleFilterChange = (sectionId: string, value: unknown) => {
     setFilters(prev => ({
       ...prev,
       [sectionId]: value
@@ -272,10 +268,10 @@ export function MobileFilters({ sections, onApply, onReset, className }: MobileF
 // Компонент отдельной секции фильтра
 interface FilterSectionProps {
   section: FilterSection
-  value: any
+  value: unknown
   isExpanded: boolean
   onToggle: () => void
-  onChange: (value: any) => void
+  onChange: (value: unknown) => void
 }
 
 function FilterSection({ section, value, isExpanded, onToggle, onChange }: FilterSectionProps) {
@@ -287,13 +283,13 @@ function FilterSection({ section, value, isExpanded, onToggle, onChange }: Filte
         return (
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder={section.placeholder}
-              value={value || ''}
-              onChange={(e) => onChange(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-input rounded-lg bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-            />
+                         <input
+               type="text"
+               placeholder={section.placeholder}
+               value={(value as string) || ''}
+               onChange={(e) => onChange(e.target.value)}
+               className="w-full pl-10 pr-4 py-3 border border-input rounded-lg bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+             />
           </div>
         )
       
@@ -413,21 +409,21 @@ function FilterSection({ section, value, isExpanded, onToggle, onChange }: Filte
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-medium text-muted-foreground mb-2">От</label>
-                <input
-                  type="date"
-                  value={value?.from || ''}
-                  onChange={(e) => onChange({ ...value, from: e.target.value })}
-                  className="w-full px-3 py-2 border border-input rounded-lg bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-muted-foreground mb-2">До</label>
-                <input
-                  type="date"
-                  value={value?.to || ''}
-                  onChange={(e) => onChange({ ...value, to: e.target.value })}
-                  className="w-full px-3 py-2 border border-input rounded-lg bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-                />
+                               <input
+                 type="date"
+                 value={(value as { from?: string })?.from || ''}
+                 onChange={(e) => onChange({ ...(value as { from?: string; to?: string }), from: e.target.value })}
+                 className="w-full px-3 py-2 border border-input rounded-lg bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+               />
+             </div>
+             <div>
+               <label className="block text-xs font-medium text-muted-foreground mb-2">До</label>
+               <input
+                 type="date"
+                 value={(value as { to?: string })?.to || ''}
+                 onChange={(e) => onChange({ ...(value as { from?: string; to?: string }), to: e.target.value })}
+                 className="w-full px-3 py-2 border border-input rounded-lg bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+               />
               </div>
             </div>
           </div>
