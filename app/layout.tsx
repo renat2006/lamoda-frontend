@@ -44,7 +44,7 @@ export default function RootLayout({
     <html lang="ru" suppressHydrationWarning>
       <body className={`${cofoSans.variable} font-sans antialiased`}>
         <NotificationProvider>
-          {children}
+        {children}
         </NotificationProvider>
       </body>
     </html>
