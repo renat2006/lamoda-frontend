@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { NotificationProvider } from '@/components/shared/notification-modal';
+import { ToastProvider } from '@/components/providers/toast-provider';
 
 const cofoSans = localFont({
   src: [
@@ -43,9 +44,11 @@ export default function RootLayout({
   return (
     <html lang="ru" suppressHydrationWarning>
       <body className={`${cofoSans.variable} font-sans antialiased`}>
-        <NotificationProvider>
-        {children}
-        </NotificationProvider>
+        <ToastProvider>
+          <NotificationProvider>
+            {children}
+          </NotificationProvider>
+        </ToastProvider>
       </body>
     </html>
   );

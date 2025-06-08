@@ -29,6 +29,8 @@ import {
 import { Button } from "@/components/ui"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+import { useUser } from "@/hooks/use-user"
+import { authService } from "@/lib/auth"
 
 // Основная навигация для десктопа
 const mainNavigation = [
@@ -364,6 +366,11 @@ function NotificationsDropdown() {
 
 function UserMenu() {
   const [isOpen, setIsOpen] = useState(false)
+  const { user, isLoading } = useUser()
+
+  const handleLogout = () => {
+    authService.logout()
+  }
   
   return (
     <div className="relative">
@@ -377,8 +384,21 @@ function UserMenu() {
           <User className="h-4 w-4 text-white" />
         </div>
         <div className="text-left hidden md:block">
-          <div className="text-sm font-medium text-foreground">Модный стиль</div>
-          <div className="text-xs text-foreground/40 uppercase tracking-wider">#12345</div>
+          {isLoading ? (
+            <>
+              <div className="w-20 h-4 bg-muted animate-pulse rounded mb-1" />
+              <div className="w-12 h-3 bg-muted animate-pulse rounded" />
+            </>
+          ) : (
+            <>
+              <div className="text-sm font-medium text-foreground">
+                {user?.company_name || 'Загрузка...'}
+              </div>
+              <div className="text-xs text-foreground/40 uppercase tracking-wider">
+                {user?.inn || '...'}
+              </div>
+            </>
+          )}
         </div>
         <ChevronDown className="h-3 w-3 text-foreground/40 hidden md:block" />
       </Button>
@@ -400,9 +420,25 @@ function UserMenu() {
                   <User className="h-8 w-8 text-white" />
                 </div>
                 <div>
-                  <div className="font-medium text-foreground mb-1">ООО «Модный стиль»</div>
-                  <div className="text-sm text-foreground/60 mb-1">seller@example.com</div>
-                  <div className="text-xs text-foreground/40 uppercase tracking-wider">#12345</div>
+                  {isLoading ? (
+                    <>
+                      <div className="w-32 h-5 bg-muted animate-pulse rounded mb-2" />
+                      <div className="w-24 h-4 bg-muted animate-pulse rounded mb-1" />
+                      <div className="w-16 h-3 bg-muted animate-pulse rounded" />
+                    </>
+                  ) : (
+                    <>
+                      <div className="font-medium text-foreground mb-1">
+                        {user?.company_name || 'Компания'}
+                      </div>
+                      <div className="text-sm text-foreground/60 mb-1">
+                        {user?.email || 'email@example.com'}
+                      </div>
+                      <div className="text-xs text-foreground/40 uppercase tracking-wider">
+                        ИНН {user?.inn || '...'}
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
               
@@ -420,7 +456,10 @@ function UserMenu() {
                   <span className="text-foreground">Помощь</span>
                 </Link>
                 <div className="border-t border-border mt-4 pt-4">
-                  <button className="flex items-center gap-4 p-4 active:bg-muted/50 transition-colors w-full text-left">
+                  <button 
+                    onClick={handleLogout}
+                    className="flex items-center gap-4 p-4 active:bg-muted/50 transition-colors w-full text-left"
+                  >
                     <LogOut className="h-5 w-5 text-foreground/40" />
                     <span className="text-foreground">Выйти</span>
                   </button>
@@ -432,18 +471,45 @@ function UserMenu() {
           {/* Desktop Dropdown */}
           <div className="hidden md:block absolute top-full right-0 mt-2 w-72 bg-white border border-border z-50">
             <div className="p-6 border-b border-border">
-              <div className="font-medium text-foreground mb-1">ООО «Модный стиль»</div>
-              <div className="text-sm text-foreground/60 mb-2">seller@example.com</div>
-              <div className="flex items-center gap-4 text-xs">
-                <div>
-                  <span className="text-foreground/40 uppercase tracking-wider">Рейтинг</span>
-                  <div className="font-medium text-foreground">4,8</div>
-                </div>
-                <div>
-                  <span className="text-foreground/40 uppercase tracking-wider">Статус</span>
-                  <div className="font-medium text-foreground">Проверенный</div>
-                </div>
-              </div>
+              {isLoading ? (
+                <>
+                  <div className="w-40 h-5 bg-muted animate-pulse rounded mb-2" />
+                  <div className="w-32 h-4 bg-muted animate-pulse rounded mb-4" />
+                  <div className="flex items-center gap-4 text-xs">
+                    <div>
+                      <div className="w-12 h-3 bg-muted animate-pulse rounded mb-1" />
+                      <div className="w-8 h-4 bg-muted animate-pulse rounded" />
+                    </div>
+                    <div>
+                      <div className="w-12 h-3 bg-muted animate-pulse rounded mb-1" />
+                      <div className="w-16 h-4 bg-muted animate-pulse rounded" />
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="font-medium text-foreground mb-1">
+                    {user?.company_name || 'Компания'}
+                  </div>
+                  <div className="text-sm text-foreground/60 mb-2">
+                    {user?.email || 'email@example.com'}
+                  </div>
+                  <div className="flex items-center gap-4 text-xs">
+                    <div>
+                      <span className="text-foreground/40 uppercase tracking-wider">ИНН</span>
+                      <div className="font-medium text-foreground">
+                        {user?.inn || '...'}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-foreground/40 uppercase tracking-wider">Адрес</span>
+                      <div className="font-medium text-foreground text-xs truncate max-w-24" title={user?.legal_address}>
+                        {user?.legal_address ? user.legal_address.substring(0, 20) + (user.legal_address.length > 20 ? '...' : '') : '...'}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
             <div className="p-2">
               <Link href="/profile" className="flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors">
@@ -460,7 +526,10 @@ function UserMenu() {
               </Link>
             </div>
             <div className="p-2 border-t border-border">
-              <button className="flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors w-full text-left">
+              <button 
+                onClick={handleLogout}
+                className="flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors w-full text-left"
+              >
                 <LogOut className="h-4 w-4 text-foreground/40" />
                 <span className="text-sm text-foreground">Выйти</span>
               </button>
@@ -496,7 +565,7 @@ function MobileHeader() {
               <img 
                 src="/logo.svg" 
                 alt="Lamoda" 
-                className="h-12 w-auto max-w-[160px] object-contain" 
+                className="h-16 w-auto max-w-[160px] object-contain" 
               />
             </Link>
             {currentPage?.name && currentPage.name !== "Lamoda" && (
@@ -648,7 +717,7 @@ function DesktopHeader() {
               <img 
                 src="/logo.svg" 
                 alt="Lamoda" 
-                className="h-12 w-auto max-w-[180px] object-contain" 
+                className="h-20 w-auto max-w-[180px] object-contain" 
               />
             </Link>
             

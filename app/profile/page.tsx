@@ -21,6 +21,7 @@ import {
   Shield
 } from 'lucide-react'
 import { formatNumber } from '@/lib/format-utils'
+import { useUser } from '@/hooks/use-user'
 
 // Mock data
 const companyInfo = {
@@ -81,6 +82,57 @@ const getStatusIcon = (status: string) => {
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
   const [activeTab, setActiveTab] = useState('info')
+  const { user, isLoading, error } = useUser()
+
+  if (isLoading) {
+    return (
+      <PageLayout>
+        <PageWrapper maxWidth="2xl">
+          <div className="animate-pulse space-y-8">
+            <div className="flex justify-between items-start">
+              <div>
+                <div className="h-12 bg-muted rounded w-48 mb-4" />
+                <div className="h-6 bg-muted rounded w-64" />
+              </div>
+              <div className="h-10 bg-muted rounded w-32" />
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <div className="h-8 bg-muted rounded w-16" />
+                  <div className="h-4 bg-muted rounded w-20" />
+                  <div className="h-3 bg-muted rounded w-16" />
+                </div>
+              ))}
+            </div>
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+              <div className="xl:col-span-2">
+                <div className="h-80 bg-muted rounded" />
+              </div>
+              <div className="h-80 bg-muted rounded" />
+            </div>
+          </div>
+        </PageWrapper>
+      </PageLayout>
+    )
+  }
+
+  if (error) {
+    return (
+      <PageLayout>
+        <PageWrapper maxWidth="2xl">
+          <div className="text-center py-16">
+            <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
+            <h2 className="text-xl font-medium text-foreground mb-2">Ошибка загрузки</h2>
+            <p className="text-foreground/60 mb-4">{error}</p>
+            <LamodaButton onClick={() => window.location.reload()}>
+              Попробовать снова
+            </LamodaButton>
+          </div>
+        </PageWrapper>
+      </PageLayout>
+    )
+  }
 
   return (
     <PageLayout>
@@ -172,9 +224,9 @@ export default function ProfilePage() {
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-medium text-foreground">Информация о компании</h3>
                 <div className="flex items-center gap-2">
-                  {getStatusIcon(companyInfo.status)}
-                  <span className={`text-sm ${getStatusColor(companyInfo.status)}`}>
-                    {getStatusText(companyInfo.status)}
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <span className="text-sm text-green-600">
+                    Проверенный
                   </span>
                 </div>
               </div>
@@ -185,58 +237,47 @@ export default function ProfilePage() {
                     <label className="text-xs text-foreground/40 uppercase tracking-wider block mb-1">
                       Название компании
                     </label>
-                    <div className="text-foreground font-medium">{companyInfo.name}</div>
-                  </div>
-                  
-                  <div>
-                    <label className="text-xs text-foreground/40 uppercase tracking-wider block mb-1">
-                      Полное наименование
-                    </label>
-                    <div className="text-foreground/60 text-sm">{companyInfo.legalName}</div>
-                  </div>
-                  
-                  <div>
-                    <label className="text-xs text-foreground/40 uppercase tracking-wider block mb-1">
-                      ИНН / КПП
-                    </label>
-                    <div className="text-foreground font-mono">{companyInfo.inn} / {companyInfo.kpp}</div>
-                  </div>
-                  
-                  <div>
-                    <label className="text-xs text-foreground/40 uppercase tracking-wider block mb-1">
-                      ОГРН
-                    </label>
-                    <div className="text-foreground font-mono">{companyInfo.ogrn}</div>
-                  </div>
-                </div>
-                
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-xs text-foreground/40 uppercase tracking-wider block mb-1">
-                      Контактное лицо
-                    </label>
-                    <div className="text-foreground font-medium">{companyInfo.contactPerson}</div>
-                  </div>
-                  
-                  <div>
-                    <label className="text-xs text-foreground/40 uppercase tracking-wider block mb-1">
-                      Телефон
-                    </label>
-                    <div className="text-foreground">{companyInfo.phone}</div>
+                    <div className="text-foreground font-medium">{user?.company_name || 'Не указано'}</div>
                   </div>
                   
                   <div>
                     <label className="text-xs text-foreground/40 uppercase tracking-wider block mb-1">
                       Email
                     </label>
-                    <div className="text-foreground">{companyInfo.email}</div>
+                    <div className="text-foreground/60 text-sm">{user?.email || 'Не указан'}</div>
                   </div>
                   
                   <div>
                     <label className="text-xs text-foreground/40 uppercase tracking-wider block mb-1">
-                      Адрес
+                      ИНН
                     </label>
-                    <div className="text-foreground/60 text-sm">{companyInfo.address}</div>
+                    <div className="text-foreground font-mono">{user?.inn || 'Не указан'}</div>
+                  </div>
+                  
+                  <div>
+                    <label className="text-xs text-foreground/40 uppercase tracking-wider block mb-1">
+                      Банковский счет
+                    </label>
+                    <div className="text-foreground font-mono">{user?.bank_account || 'Не указан'}</div>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-xs text-foreground/40 uppercase tracking-wider block mb-1">
+                      Юридический адрес
+                    </label>
+                    <div className="text-foreground/60 text-sm">{user?.legal_address || 'Не указан'}</div>
+                  </div>
+                  
+                  <div>
+                    <label className="text-xs text-foreground/40 uppercase tracking-wider block mb-1">
+                      Статус верификации
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span className="text-green-600 text-sm">Проверенный селлер</span>
+                    </div>
                   </div>
                 </div>
               </div>
