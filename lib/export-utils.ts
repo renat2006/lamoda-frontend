@@ -1,6 +1,6 @@
 // Utility functions for exporting data and printing labels
 
-interface ExportOptions {
+interface LegacyExportOptions {
   format: 'csv' | 'xlsx' | 'json' | 'pdf'
   includeHeaders: boolean
   encoding: 'utf-8' | 'windows-1251'
@@ -17,7 +17,7 @@ export function formatDate(date: string | Date, format: 'iso' | 'ru'): string {
 }
 
 // Export to CSV
-export function exportToCSV(data: any[], filename: string, options: ExportOptions): void {
+export function exportToCSV(data: any[], filename: string, options: LegacyExportOptions): void {
   if (data.length === 0) return
 
   const headers = Object.keys(data[0])
@@ -66,7 +66,7 @@ export function exportToCSV(data: any[], filename: string, options: ExportOption
 }
 
 // Export to JSON
-export function exportToJSON(data: any[], filename: string, options: ExportOptions): void {
+export function exportToJSON(data: any[], filename: string, options: LegacyExportOptions): void {
   const processedData = data.map(item => {
     const processed = { ...item }
     
@@ -312,4 +312,6 @@ export function exportData(
     default:
       throw new Error(`Неподдерживаемый формат: ${format}`)
   }
-} 
+}
+
+ 
