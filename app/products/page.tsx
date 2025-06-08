@@ -52,7 +52,7 @@ export default function ProductsPage() {
     const inStock = products.filter(p => p.in_stock).length
     const outOfStock = total - inStock
     const averagePrice = total > 0 ? products.reduce((sum, p) => sum + (p.price || 0), 0) / total : 0
-    const totalValue = products.reduce((sum, p) => sum + (p.price || 0) * (p.stock_quantity || 0), 0)
+    const totalValue = products.reduce((sum, p) => sum + (p.price || 0), 0)
     
     const categories: { [key: string]: number } = {}
     const brands: { [key: string]: number } = {}
@@ -72,7 +72,7 @@ export default function ProductsPage() {
 
   const availableOptions = useMemo(() => ({
     categories: Array.from(new Set(products.map(p => p.category))).filter(Boolean),
-    brands: Array.from(new Set(products.map(p => p.brand).filter(Boolean))),
+    brands: Array.from(new Set(products.map(p => p.brand).filter(Boolean) as string[])),
     tags: Array.from(new Set(products.flatMap(p => p.tags || []))),
     sizes: Array.from(new Set(products.flatMap(p => p.sizes || []))),
     colors: Array.from(new Set(products.flatMap(p => p.colors || [])))
@@ -104,14 +104,14 @@ export default function ProductsPage() {
   useEffect(() => {
     let filtered = [...products]
 
-    // Apply filters
+    // Search filter
     if (filters.search) {
       const searchLower = filters.search.toLowerCase()
       filtered = filtered.filter(product => 
         product.name.toLowerCase().includes(searchLower) ||
         product.brand?.toLowerCase().includes(searchLower) ||
         product.description?.toLowerCase().includes(searchLower) ||
-        product.sku?.toLowerCase().includes(searchLower)
+        product.id?.toLowerCase().includes(searchLower)
       )
     }
 
@@ -127,9 +127,7 @@ export default function ProductsPage() {
       filtered = filtered.filter(product => Boolean(product.in_stock) === filters.inStock)
     }
 
-    if (filters.status?.length) {
-      filtered = filtered.filter(product => product.status && filters.status!.includes(product.status))
-    }
+    // Status filtering removed as field doesn't exist in Product type
 
     if (filters.priceMin !== undefined) {
       filtered = filtered.filter(product => (product.price || 0) >= filters.priceMin!)
@@ -139,11 +137,9 @@ export default function ProductsPage() {
       filtered = filtered.filter(product => (product.price || 0) <= filters.priceMax!)
     }
 
-    if (filters.rating !== undefined) {
-      filtered = filtered.filter(product => (product.rating || 0) >= filters.rating!)
-    }
+    // Rating filtering removed as field doesn't exist in Product type
 
-    // Apply sorting
+    // Apply sorting with only available fields
     filtered.sort((a, b) => {
       let aValue: any, bValue: any
 
@@ -159,22 +155,6 @@ export default function ProductsPage() {
         case 'created':
           aValue = new Date(a.created_at || 0)
           bValue = new Date(b.created_at || 0)
-          break
-        case 'updated':
-          aValue = new Date(a.updated_at || 0)
-          bValue = new Date(b.updated_at || 0)
-          break
-        case 'views':
-          aValue = a.views || 0
-          bValue = b.views || 0
-          break
-        case 'sales':
-          aValue = a.sales_count || 0
-          bValue = b.sales_count || 0
-          break
-        case 'rating':
-          aValue = a.rating || 0
-          bValue = b.rating || 0
           break
         default:
           aValue = 0
@@ -475,9 +455,6 @@ export default function ProductsPage() {
                   <SelectItem value="name-desc">Название Я-А</SelectItem>
                   <SelectItem value="price-desc">Цена ↓</SelectItem>
                   <SelectItem value="price-asc">Цена ↑</SelectItem>
-                  <SelectItem value="views-desc">Просмотры ↓</SelectItem>
-                  <SelectItem value="sales-desc">Продажи ↓</SelectItem>
-                  <SelectItem value="rating-desc">Рейтинг ↓</SelectItem>
                 </SelectContent>
               </Select>
 

@@ -152,7 +152,7 @@ export function exportToPDF(data: any[], filename: string, title: string): void 
 }
 
 // Generate Excel file (XLSX)
-export function exportToExcel(data: any[], filename: string, options: ExportOptions): void {
+export function exportToExcel(data: any[], filename: string, options: any): void {
   // For now, we'll use CSV as Excel alternative
   // In production, you would use a library like 'xlsx' or 'exceljs'
   const csvFilename = filename.replace('.xlsx', '.csv')
@@ -287,7 +287,7 @@ export function exportData(
   data: any[], 
   format: string, 
   filename: string, 
-  options: ExportOptions,
+  options: any,
   title?: string
 ): void {
   if (data.length === 0) {
