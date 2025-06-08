@@ -128,18 +128,18 @@ export function MobileNav({ className }: MobileNavProps) {
             <div className="grid grid-cols-3 gap-3">
               {quickActions.map((action) => (
                 action.href ? (
-                  <Link
-                    key={action.name}
-                    href={action.href}
-                    className={cn(
-                      "flex flex-col items-center justify-center p-4 rounded-xl transition-all duration-200 active:scale-95 hover:shadow-md",
-                      action.color
-                    )}
-                    onClick={() => setIsQuickMenuOpen(false)}
-                  >
-                    <action.icon className="h-6 w-6 mb-2" />
-                    <span className="text-xs font-medium text-center">{action.name}</span>
-                  </Link>
+                <Link
+                  key={action.name}
+                  href={action.href}
+                  className={cn(
+                    "flex flex-col items-center justify-center p-4 rounded-xl transition-all duration-200 active:scale-95 hover:shadow-md",
+                    action.color
+                  )}
+                  onClick={() => setIsQuickMenuOpen(false)}
+                >
+                  <action.icon className="h-6 w-6 mb-2" />
+                  <span className="text-xs font-medium text-center">{action.name}</span>
+                </Link>
                 ) : (
                   <button
                     key={action.name}
