@@ -160,10 +160,27 @@ class AuthService {
     return response.json()
   }
 
-  public logout(): void {
-    this.clearTokens()
-    if (typeof window !== 'undefined') {
-      window.location.href = '/login'
+  public async logout(): Promise<void> {
+    try {
+      // Try to call logout endpoint if we have a token
+      const token = this.getStoredToken()
+      if (token) {
+        await fetch(`${API_BASE_URL}/logout`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        })
+      }
+    } catch (error) {
+      console.error('Logout error:', error)
+    } finally {
+      // Always clear tokens and redirect, even if server request fails
+      this.clearTokens()
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login'
+      }
     }
   }
 }

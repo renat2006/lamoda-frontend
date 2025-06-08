@@ -368,8 +368,12 @@ function UserMenu() {
   const [isOpen, setIsOpen] = useState(false)
   const { user, isLoading } = useUser()
 
-  const handleLogout = () => {
-    authService.logout()
+  const handleLogout = async () => {
+    try {
+      await authService.logout()
+    } catch (error) {
+      console.error('Logout failed:', error)
+    }
   }
   
   return (
@@ -402,115 +406,70 @@ function UserMenu() {
         </div>
         <ChevronDown className="h-3 w-3 text-foreground/40 hidden md:block" />
       </Button>
-      
+
       {isOpen && (
         <>
-          {/* Mobile Full Screen Menu */}
-          <div className="md:hidden fixed inset-0 bg-white z-50">
-            <div className="flex items-center justify-between p-4 border-b border-border">
-              <h2 className="text-lg font-medium text-foreground">Профиль</h2>
-              <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
-            
-            <div className="p-4">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 bg-foreground flex items-center justify-center">
-                  <User className="h-8 w-8 text-white" />
+          {/* Mobile Dropdown */}
+          <div className="md:hidden fixed inset-x-0 top-16 bg-white border-b border-border z-40">
+            <div className="p-4 border-b border-border">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-foreground flex items-center justify-center">
+                  <User className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  {isLoading ? (
-                    <>
-                      <div className="w-32 h-5 bg-muted animate-pulse rounded mb-2" />
-                      <div className="w-24 h-4 bg-muted animate-pulse rounded mb-1" />
-                      <div className="w-16 h-3 bg-muted animate-pulse rounded" />
-                    </>
-                  ) : (
-                    <>
-                      <div className="font-medium text-foreground mb-1">
-                        {user?.company_name || 'Компания'}
-                      </div>
-                      <div className="text-sm text-foreground/60 mb-1">
-                        {user?.email || 'email@example.com'}
-                      </div>
-                      <div className="text-xs text-foreground/40 uppercase tracking-wider">
-                        ИНН {user?.inn || '...'}
-                      </div>
-                    </>
-                  )}
+                  <div className="font-medium text-foreground">
+                    {user?.company_name || 'Загрузка...'}
+                  </div>
+                  <div className="text-sm text-foreground/40">
+                    {user?.inn || '...'}
+                  </div>
                 </div>
               </div>
-              
-              <div className="space-y-2">
-                <Link href="/profile" className="flex items-center gap-4 p-4 active:bg-muted/50 transition-colors">
-                  <User className="h-5 w-5 text-foreground/40" />
-                  <span className="text-foreground">Профиль</span>
-                </Link>
-                <Link href="/settings" className="flex items-center gap-4 p-4 active:bg-muted/50 transition-colors">
-                  <Settings className="h-5 w-5 text-foreground/40" />
-                  <span className="text-foreground">Настройки</span>
-                </Link>
-                <Link href="/help" className="flex items-center gap-4 p-4 active:bg-muted/50 transition-colors">
-                  <BookOpen className="h-5 w-5 text-foreground/40" />
-                  <span className="text-foreground">Помощь</span>
-                </Link>
-                <div className="border-t border-border mt-4 pt-4">
-                  <button 
-                    onClick={handleLogout}
-                    className="flex items-center gap-4 p-4 active:bg-muted/50 transition-colors w-full text-left"
-                  >
-                    <LogOut className="h-5 w-5 text-foreground/40" />
-                    <span className="text-foreground">Выйти</span>
-                  </button>
-                </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Link href="/profile" className="flex items-center gap-4 p-4 active:bg-muted/50 transition-colors">
+                <User className="h-5 w-5 text-foreground/40" />
+                <span className="text-foreground">Профиль</span>
+              </Link>
+              <Link href="/settings" className="flex items-center gap-4 p-4 active:bg-muted/50 transition-colors">
+                <Settings className="h-5 w-5 text-foreground/40" />
+                <span className="text-foreground">Настройки</span>
+              </Link>
+              <Link href="/help" className="flex items-center gap-4 p-4 active:bg-muted/50 transition-colors">
+                <BookOpen className="h-5 w-5 text-foreground/40" />
+                <span className="text-foreground">Помощь</span>
+              </Link>
+              <div className="border-t border-border mt-4 pt-4">
+                <button 
+                  onClick={handleLogout}
+                  className="flex items-center gap-4 p-4 active:bg-muted/50 transition-colors w-full text-left"
+                >
+                  <LogOut className="h-5 w-5 text-foreground/40" />
+                  <span className="text-foreground">Выйти</span>
+                </button>
               </div>
             </div>
           </div>
 
           {/* Desktop Dropdown */}
-          <div className="hidden md:block absolute top-full right-0 mt-2 w-72 bg-white border border-border z-50">
-            <div className="p-6 border-b border-border">
-              {isLoading ? (
-                <>
-                  <div className="w-40 h-5 bg-muted animate-pulse rounded mb-2" />
-                  <div className="w-32 h-4 bg-muted animate-pulse rounded mb-4" />
-                  <div className="flex items-center gap-4 text-xs">
-                    <div>
-                      <div className="w-12 h-3 bg-muted animate-pulse rounded mb-1" />
-                      <div className="w-8 h-4 bg-muted animate-pulse rounded" />
-                    </div>
-                    <div>
-                      <div className="w-12 h-3 bg-muted animate-pulse rounded mb-1" />
-                      <div className="w-16 h-4 bg-muted animate-pulse rounded" />
-                    </div>
+          <div className="hidden md:block absolute right-0 top-full mt-2 w-72 bg-white border border-border rounded-lg shadow-lg z-50">
+            <div className="p-4 border-b border-border">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-foreground flex items-center justify-center">
+                  <User className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <div className="font-medium text-foreground">
+                    {user?.company_name || 'Загрузка...'}
                   </div>
-                </>
-              ) : (
-                <>
-                  <div className="font-medium text-foreground mb-1">
-                    {user?.company_name || 'Компания'}
+                  <div className="text-sm text-foreground/40">
+                    {user?.inn || '...'}
                   </div>
-                  <div className="text-sm text-foreground/60 mb-2">
-                    {user?.email || 'email@example.com'}
-                  </div>
-                  <div className="flex items-center gap-4 text-xs">
-                    <div>
-                      <span className="text-foreground/40 uppercase tracking-wider">ИНН</span>
-                      <div className="font-medium text-foreground">
-                        {user?.inn || '...'}
-                      </div>
-                    </div>
-                    <div>
-                      <span className="text-foreground/40 uppercase tracking-wider">Адрес</span>
-                      <div className="font-medium text-foreground text-xs truncate max-w-24" title={user?.legal_address}>
-                        {user?.legal_address ? user.legal_address.substring(0, 20) + (user.legal_address.length > 20 ? '...' : '') : '...'}
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
+                </div>
+              </div>
             </div>
+            
             <div className="p-2">
               <Link href="/profile" className="flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors">
                 <User className="h-4 w-4 text-foreground/40" />
@@ -550,6 +509,7 @@ function UserMenu() {
 function MobileHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const pathname = usePathname()
+  const { user } = useUser()
   
   const currentPage = [...mainNavigation, ...secondaryNavigation].find(
     item => pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))
@@ -681,16 +641,29 @@ function MobileHeader() {
                     <User className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <div className="font-medium text-sm text-foreground">Модный стиль</div>
-                    <div className="text-xs text-muted-foreground">Селлер #12345</div>
+                    <div className="font-medium text-sm text-foreground">{user?.company_name || 'Загрузка...'}</div>
+                    <div className="text-xs text-muted-foreground">ИНН {user?.inn || '...'}</div>
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="flex-1 h-8">
-                    <Settings className="h-3 w-3 mr-1" />
-                    Настройки
+                  <Button variant="outline" size="sm" className="flex-1 h-8" asChild>
+                    <Link href="/profile">
+                      <Settings className="h-3 w-3 mr-1" />
+                      Профиль
+                    </Link>
                   </Button>
-                  <Button variant="outline" size="sm" className="flex-1 h-8">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1 h-8"
+                    onClick={async () => {
+                      try {
+                        await authService.logout()
+                      } catch (error) {
+                        console.error('Logout failed:', error)
+                      }
+                    }}
+                  >
                     <LogOut className="h-3 w-3 mr-1" />
                     Выйти
                   </Button>
