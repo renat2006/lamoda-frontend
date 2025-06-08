@@ -596,7 +596,7 @@ export default function EditProductPage() {
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Сохранение...
                 </>
-              ) : isLastSection ? (
+              ) : sections.findIndex(s => s.id === activeSection) === sections.length - 1 ? (
                 <>
                   <Check className="mr-2 h-4 w-4" />
                   Сохранить изменения

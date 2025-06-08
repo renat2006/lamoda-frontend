@@ -631,7 +631,7 @@ export default function CreateProductPage() {
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Сохранение...
                     </>
-                  ) : activeSection === sections.length - 1 ? (
+                  ) : sections.findIndex(s => s.id === activeSection) === sections.length - 1 ? (
                     <>
                       <Check className="mr-2 h-4 w-4" />
                       Создать товар
