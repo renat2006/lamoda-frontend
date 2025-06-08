@@ -1,6 +1,6 @@
 // Application constants
-export const APP_NAME = "Frontend App"
-export const APP_DESCRIPTION = "Next.js application with shadcn/ui"
+export const APP_NAME = "Lamoda Seller"
+export const APP_DESCRIPTION = "Панель управления для селлеров Lamoda"
 export const APP_VERSION = "1.0.0"
 
 // API endpoints

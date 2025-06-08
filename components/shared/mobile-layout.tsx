@@ -86,7 +86,7 @@ export function PageWrapper({
   return (
     <div className={cn(
       "animate-in fade-in-0 duration-300 slide-in-from-bottom-4",
-      "w-full mx-auto",
+      "w-full max-w-full mx-auto overflow-x-hidden",
       maxWidthClasses[maxWidth],
       paddingClasses[padding],
       className

@@ -12,7 +12,15 @@ import {
   CheckCircle
 } from "lucide-react"
 import { Button } from "@/components/ui"
-import { cn, hapticFeedback } from "@/lib/utils"
+import { formatCurrency, formatNumber } from '@/lib/format-utils'
+// Простые утилиты
+const cn = (...classes: (string | undefined | false)[]) => classes.filter(Boolean).join(' ')
+const hapticFeedback = (type: 'light' | 'medium') => {
+  if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+    const patterns = { light: 10, medium: 20 }
+    navigator.vibrate(patterns[type])
+  }
+}
 
 interface FilterOption {
   label: string
@@ -397,8 +405,8 @@ function FilterSection({ section, value, isExpanded, onToggle, onChange }: Filte
               />
             </div>
             <div className="flex justify-between text-xs text-muted-foreground">
-              <span>От {section.min?.toLocaleString()} ₽</span>
-              <span>До {section.max?.toLocaleString()} ₽</span>
+                              <span>От {formatCurrency(section.min || 0)}</span>
+                <span>До {formatCurrency(section.max || 0)}</span>
             </div>
           </div>
         )

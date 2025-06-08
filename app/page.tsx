@@ -1,194 +1,250 @@
 "use client"
 
 import Link from "next/link"
-import { Package, ShoppingCart, TrendingUp, FileText, TrendingDown } from "lucide-react"
+import { Package, ShoppingCart, TrendingUp, FileText, AlertCircle, CheckCircle, Clock, Target } from "lucide-react"
 import { 
-  MobileLayout, 
   PageWrapper, 
   AnimatedCard, 
   ResponsiveGrid,
   StatsContainer,
   StatCard
 } from "@/components/shared"
-import { Button } from "@/components/ui"
+import { PageLayout } from "@/components/shared/page-layout"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { LamodaButton } from "@/components/ui/lamoda-button"
+import { LamodaCard, LamodaCardHeader, LamodaCardTitle, LamodaCardDescription, LamodaCardContent } from "@/components/ui/lamoda-card"
 
 const quickActions = [
   {
-    title: "Управление заказами",
-    description: "Просматривайте и обрабатывайте заказы",
+    title: "Добавить товар",
+    description: "Создайте карточку нового товара",
+    icon: Package,
+    href: "/products/add",
+    color: "bg-primary",
+    urgent: false,
+  },
+  {
+    title: "Обработка заказов",
+    description: "5 заказов требуют вашего внимания",
     icon: ShoppingCart,
     href: "/orders",
-    color: "bg-blue-500",
+    color: "bg-[oklch(0.75_0.08_220)]",
+    urgent: true,
+    badge: 5,
   },
   {
-    title: "Управление товарами",
-    description: "Добавляйте и редактируйте товары",
-    icon: Package,
-    href: "/products",
-    color: "bg-green-500",
-  },
-  {
-    title: "Аналитика",
-    description: "Отчеты и статистика продаж",
+    title: "Аналитика продаж",
+    description: "Отчёты и метрики эффективности",
     icon: TrendingUp,
     href: "/analytics",
-    color: "bg-purple-500",
+    color: "bg-[oklch(0.85_0.08_160)]",
+    urgent: false,
   },
   {
-    title: "Логистика",
-    description: "Управление поставками",
+    title: "Подготовка к отгрузке",
+    description: "12 товаров готовы к комплектации",
     icon: FileText,
     href: "/logistics",
-    color: "bg-orange-500",
+    color: "bg-[oklch(0.78_0.12_65)]",
+    urgent: true,
+    badge: 12,
   },
 ]
 
-const recentActivity = [
+const criticalAlerts = [
   {
-    title: "Новый заказ #12345",
-    description: "2 товара на сумму 3 450 ₽",
-    time: "5 минут назад",
-    type: "order"
-  },
-  {
-    title: "Товар требует модерации",
-    description: "Кроссовки Nike Air Max",
-    time: "1 час назад",
-    type: "moderation"
-  },
-  {
-    title: "Заказ отгружен",
-    description: "Заказ #12340 передан в доставку",
+    type: "critical",
+    title: "Требуется корректировка карточек товаров",
+    description: "3 карточки отклонены модерацией. Рекомендуем исправить до 18:00",
     time: "2 часа назад",
-    type: "shipped"
+    action: "Исправить",
+    href: "/products?status=rejected"
+  },
+  {
+    type: "important", 
+    title: "Обновите информацию об остатках",
+    description: "8 товаров имеют низкий остаток. Обновите данные для корректного отображения",
+    time: "4 часа назад",
+    action: "Обновить",
+    href: "/products?action=update-stock"
+  },
+  {
+    type: "success",
+    title: "Выплата успешно обработана",
+    description: "Зачисление 67 890 ₽ на ваш расчётный счёт завершено",
+    time: "Вчера",
+    action: "Подробнее",
+    href: "/finance/payouts"
+  },
+]
+
+const performanceMetrics = [
+  {
+    title: "Заказы сегодня",
+    value: "24",
+    change: "+8 к вчера (конверсия: 3,2%)",
+    changeType: "positive" as const,
+    icon: <ShoppingCart className="h-5 w-5" />
+  },
+  {
+    title: "К выплате",
+    value: "67 890 ₽",
+    change: "Выплата: 15 марта 2025 (комиссия: 12%)",
+    changeType: "neutral" as const,
+    icon: <TrendingUp className="h-5 w-5" />
+  },
+  {
+    title: "Активных товаров",
+    value: "156",
+    change: "+3 прошли модерацию (рейтинг: 4,3)",
+    changeType: "positive" as const,
+    icon: <Package className="h-5 w-5" />
+  },
+  {
+    title: "Время комплектации",
+    value: "2,4 ч",
+    change: "Соответствует SLA (цель: до 4 часов)",
+    changeType: "positive" as const,
+    icon: <Clock className="h-5 w-5" />
   },
 ]
 
 export default function HomePage() {
   return (
-    <MobileLayout>
+    <PageLayout>
       <PageWrapper maxWidth="2xl">
-        {/* Welcome section */}
-        <AnimatedCard className="mb-6 md:mb-8">
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-2">
-            Добро пожаловать в Lamoda Seller
-          </h1>
-          <p className="text-base md:text-lg text-muted-foreground">
-            Управляйте своим бизнесом на Lamoda из одного места
-          </p>
-        </AnimatedCard>
-
-        {/* Stats overview */}
-        <AnimatedCard delay={200} className="mb-8 md:mb-12">
-          <h2 className="text-lg md:text-xl font-semibold text-foreground mb-4 md:mb-6">
-            Статистика за сегодня
-          </h2>
-          <StatsContainer>
-            <StatCard
-              title="Заказы сегодня"
-              value="24"
-              change="+12% от вчера"
-              changeType="positive"
-              icon={<ShoppingCart className="h-5 w-5" />}
-            />
-            <StatCard
-              title="Выручка"
-              value="₽67,890"
-              change="+8% от вчера"
-              changeType="positive"
-              icon={<TrendingUp className="h-5 w-5" />}
-            />
-            <StatCard
-              title="Товары"
-              value="156"
-              change="Активных"
-              changeType="neutral"
-              icon={<Package className="h-5 w-5" />}
-            />
-            <StatCard
-              title="Конверсия"
-              value="3.2%"
-              change="-0.5% от вчера"
-              changeType="negative"
-              icon={<TrendingDown className="h-5 w-5" />}
-            />
-          </StatsContainer>
-        </AnimatedCard>
-
-        {/* Content grid */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 md:gap-8">
-          {/* Quick actions */}
-          <div className="xl:col-span-2">
-            <AnimatedCard delay={400}>
-              <h2 className="text-lg md:text-xl font-semibold text-foreground mb-4 md:mb-6">
-                Быстрые действия
-              </h2>
-              <ResponsiveGrid columns={{ sm: 1, md: 2 }} gap="md">
-                {quickActions.map((action, index) => {
-                  const Icon = action.icon
-                  return (
-                    <AnimatedCard key={action.href} delay={500 + index * 100}>
-                      <Link href={action.href}>
-                        <div className="bg-card p-4 md:p-6 rounded-xl border border-border hover:shadow-lg hover:border-border/60 transition-all duration-200 cursor-pointer group">
-                          <div className="flex items-center gap-4">
-                            <div className={`p-3 rounded-xl ${action.color} group-hover:scale-110 transition-transform duration-200`}>
-                              <Icon className="h-5 w-5 md:h-6 md:w-6 text-white" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                                {action.title}
-                              </h3>
-                              <p className="text-sm text-muted-foreground mt-1">
-                                {action.description}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-                    </AnimatedCard>
-                  )
-                })}
-              </ResponsiveGrid>
-            </AnimatedCard>
-          </div>
-
-          {/* Recent activity */}
-          <div className="xl:col-span-1">
-            <AnimatedCard delay={600}>
-              <h2 className="text-lg md:text-xl font-semibold text-foreground mb-4 md:mb-6">
-                Последняя активность
-              </h2>
-              <div className="bg-card rounded-xl border border-border p-4 md:p-6">
-                <div className="space-y-4">
-                  {recentActivity.map((item, index) => (
-                    <AnimatedCard key={index} delay={700 + index * 100} direction="right">
-                      <div className="flex items-start gap-3 p-3 rounded-lg hover:bg-accent/50 transition-colors duration-200">
-                        <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground">
-                            {item.title}
-                          </p>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            {item.description}
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {item.time}
-                          </p>
-                        </div>
-                      </div>
-                    </AnimatedCard>
-                  ))}
-                </div>
-                <AnimatedCard delay={1000}>
-                  <Button variant="outline" size="sm" className="w-full mt-4 hover:bg-accent">
-                    Показать все
-                  </Button>
-                </AnimatedCard>
+          {/* Welcome section */}
+          <div className="mb-12">
+            <div className="flex items-start justify-between">
+              <div>
+                <h1 className="text-4xl md:text-5xl font-light text-foreground mb-4 tracking-tight">
+                  Lamoda
+                </h1>
+                <p className="text-lg text-foreground/60 font-light">
+                  Панель селлера
+                </p>
               </div>
-            </AnimatedCard>
+              <div className="text-xs text-foreground/40 uppercase tracking-widest">
+                Активный
+              </div>
+            </div>
+            <div className="w-full h-px bg-border mt-8" />
           </div>
-        </div>
-      </PageWrapper>
-    </MobileLayout>
+
+          {/* Critical alerts */}
+          {criticalAlerts.length > 0 && (
+            <div className="mb-16">
+              <h2 className="text-sm font-medium text-foreground mb-6 uppercase tracking-widest">
+                Требует внимания
+              </h2>
+              <div className="space-y-1">
+                {criticalAlerts.map((alert, index) => (
+                  <div key={index} className="border-b border-border last:border-0">
+                    <div className="flex items-center justify-between py-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-1">
+                          <div className={`w-2 h-2 rounded-full ${
+                            alert.type === 'critical' ? 'bg-primary' :
+                            alert.type === 'important' ? 'bg-foreground/40' :
+                            'bg-foreground/20'
+                          }`} />
+                          <span className="font-medium text-foreground">
+                            {alert.title}
+                          </span>
+                        </div>
+                        <p className="text-sm text-foreground/60 ml-5">
+                          {alert.description}
+                        </p>
+                      </div>
+                      <LamodaButton size="sm" variant="secondary">
+                        <Link href={alert.href}>
+                          {alert.action}
+                        </Link>
+                      </LamodaButton>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Performance metrics */}
+          <div className="mb-16">
+            <h2 className="text-sm font-medium text-foreground mb-6 uppercase tracking-widest">
+              Показатели
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {performanceMetrics.map((metric, index) => (
+                <div key={metric.title} className="space-y-2 group">
+                  <div className="text-3xl md:text-4xl font-light text-primary group-hover:text-foreground transition-colors duration-300">
+                    {metric.value}
+                  </div>
+                  <div className="text-xs text-foreground/40 uppercase tracking-wider">
+                    {metric.title}
+                  </div>
+                  <div className="text-xs text-foreground/60">
+                    {metric.change}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Quick actions */}
+          <div className="mb-16">
+            <h2 className="text-sm font-medium text-foreground mb-6 uppercase tracking-widest">
+              Действия
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-1">
+              {quickActions.map((action, index) => {
+                const Icon = action.icon
+                return (
+                  <Link key={action.href} href={action.href}>
+                    <div className="group border border-border hover:border-foreground transition-all duration-150 p-6 cursor-pointer">
+                      <div className="flex items-center justify-between mb-4">
+                        <Icon className="h-5 w-5 text-foreground/40 group-hover:text-foreground transition-colors" />
+                        {action.badge && (
+                          <div className="w-2 h-2 bg-primary rounded-full" />
+                        )}
+                      </div>
+                      
+                      <h3 className="font-medium text-foreground mb-2">
+                        {action.title}
+                      </h3>
+                      <p className="text-xs text-foreground/60">
+                        {action.description}
+                      </p>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Expert recommendations */}
+          <div className="border-t border-border pt-8">
+            <h2 className="text-sm font-medium text-foreground mb-6 uppercase tracking-widest">
+              Рекомендации
+            </h2>
+            <div className="space-y-4">
+              <div className="flex items-start gap-4">
+                <div className="w-1 h-12 bg-primary flex-shrink-0 mt-1" />
+                <div>
+                  <p className="text-foreground font-medium mb-2">
+                    Добавьте фото товаров на модели
+                  </p>
+                  <p className="text-sm text-foreground/60 mb-3">
+                    Увеличивает конверсию на 25%
+                  </p>
+                  <LamodaButton variant="secondary" size="sm">
+                    Узнать подробнее
+                  </LamodaButton>
+                </div>
+              </div>
+            </div>
+          </div>
+        </PageWrapper>
+    </PageLayout>
   )
 }
