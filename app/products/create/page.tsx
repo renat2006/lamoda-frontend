@@ -2,15 +2,15 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Plus, Save, Package } from "lucide-react"
+import { ArrowLeft, Plus, Save, Package, Info, ImageIcon, Tag, Menu, X } from "lucide-react"
 import { LamodaButton } from "@/components/ui/lamoda-button"
-import { LamodaCard } from "@/components/ui/lamoda-card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/hooks/use-toast"
 import { productService, type Product } from "@/lib/api/products"
+import { cn } from "@/lib/utils"
 
 const CATEGORIES = [
   { value: 'tshirt', label: 'Футболка' },
@@ -49,6 +49,7 @@ export default function CreateProductPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [newImageUrl, setNewImageUrl] = useState('')
   const [newTag, setNewTag] = useState('')
+  const [activeSection, setActiveSection] = useState('basic')
   const router = useRouter()
   const { toast } = useToast()
 
@@ -140,347 +141,457 @@ export default function CreateProductPage() {
     }))
   }
 
+  const sections = [
+    { id: 'basic', label: 'Основное', icon: Info },
+    { id: 'images', label: 'Изображения', icon: ImageIcon },
+    { id: 'variants', label: 'Варианты', icon: Package },
+    { id: 'tags', label: 'Теги', icon: Tag },
+  ]
+
   return (
-    <div className="min-h-screen bg-gray-50 p-4 lg:p-8">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-6">
-          <LamodaButton 
-            variant="outline" 
-            size="sm" 
-            onClick={() => router.back()}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Назад
-          </LamodaButton>
-          <h1 className="text-2xl font-bold">Создание товара</h1>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid lg:grid-cols-2 gap-6">
-            {/* Basic Info */}
-            <LamodaCard className="p-6">
-              <h2 className="text-lg font-semibold mb-4">Основная информация</h2>
-              
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="name">Название товара *</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => handleInputChange('name', e.target.value)}
-                    placeholder="Платье летнее с цветочным принтом"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="category">Категория *</Label>
-                  <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Выберите категорию" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CATEGORIES.map(cat => (
-                        <SelectItem key={cat.value} value={cat.value}>
-                          {cat.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="brand">Бренд</Label>
-                  <Input
-                    id="brand"
-                    value={formData.brand || ''}
-                    onChange={(e) => handleInputChange('brand', e.target.value)}
-                    placeholder="Zara"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="price">Цена *</Label>
-                    <Input
-                      id="price"
-                      type="number"
-                      value={formData.price}
-                      onChange={(e) => handleInputChange('price', Number(e.target.value))}
-                      placeholder="3499"
-                      min="0"
-                      step="0.01"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="currency">Валюта</Label>
-                    <Select value={formData.currency || 'RUB'} onValueChange={(value) => handleInputChange('currency', value)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="RUB">RUB</SelectItem>
-                        <SelectItem value="USD">USD</SelectItem>
-                        <SelectItem value="EUR">EUR</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="gender">Пол</Label>
-                  <Select value={formData.gender || ''} onValueChange={(value) => handleInputChange('gender', value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Выберите пол" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {GENDERS.map(gender => (
-                        <SelectItem key={gender.value} value={gender.value}>
-                          {gender.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="description">Описание</Label>
-                  <textarea
-                    id="description"
-                    value={formData.description || ''}
-                    onChange={(e) => handleInputChange('description', e.target.value)}
-                    placeholder="Легкое платье из хлопка с цветочным узором..."
-                    className="w-full min-h-[100px] p-3 border rounded-md resize-none"
-                  />
-                </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="border-b bg-white sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-2 min-w-0">
+              <LamodaButton 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => router.back()}
+                className="shrink-0"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </LamodaButton>
+              <h1 className="text-xl font-semibold text-gray-900 truncate">
+                Создание товара
+              </h1>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              {/* Desktop buttons */}
+              <div className="hidden sm:flex items-center gap-3">
+                <LamodaButton 
+                  variant="outline" 
+                  onClick={() => router.back()}
+                  className="text-gray-600 border-gray-300 hover:bg-gray-50"
+                >
+                  Отмена
+                </LamodaButton>
+                <LamodaButton 
+                  type="submit" 
+                  form="product-form"
+                  disabled={isLoading}
+                  className="bg-black text-white hover:bg-gray-800"
+                >
+                  {isLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                      Создание...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4 mr-2" />
+                      Создать товар
+                    </>
+                  )}
+                </LamodaButton>
               </div>
-            </LamodaCard>
+            </div>
+          </div>
+          
+          {/* Progress bar */}
+          <div className="lg:hidden pb-3">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs text-gray-500">
+                {sections.findIndex(s => s.id === activeSection) + 1} из {sections.length}
+              </span>
+              <span className="text-xs text-gray-500">
+                {Math.round(((sections.findIndex(s => s.id === activeSection) + 1) / sections.length) * 100)}%
+              </span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-1">
+              <div 
+                className="bg-black h-1 rounded-full transition-all duration-300"
+                style={{ width: `${((sections.findIndex(s => s.id === activeSection) + 1) / sections.length) * 100}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
 
-            {/* Additional Info */}
-            <div className="space-y-6">
-              {/* Images */}
-              <LamodaCard className="p-6">
-                <h2 className="text-lg font-semibold mb-4">Изображения</h2>
-                
-                <div className="space-y-4">
-                  <div className="flex gap-2">
-                    <Input
-                      value={newImageUrl}
-                      onChange={(e) => setNewImageUrl(e.target.value)}
-                      placeholder="https://cdn.lamoda.ru/images/1.jpg"
-                    />
-                    <LamodaButton type="button" onClick={addImage} size="sm">
-                      <Plus className="w-4 h-4" />
-                    </LamodaButton>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="lg:grid lg:grid-cols-[240px,1fr] lg:gap-8">
+          {/* Desktop Sidebar */}
+          <div className="hidden lg:block">
+            <div className="sticky top-24 space-y-1">
+              {sections.map((section) => {
+                const Icon = section.icon
+                return (
+                  <button
+                    key={section.id}
+                    onClick={() => setActiveSection(section.id)}
+                    className={cn(
+                      "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors",
+                      activeSection === section.id
+                        ? "bg-white text-gray-900 shadow-sm border border-gray-200"
+                        : "text-gray-600 hover:bg-white/50"
+                    )}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {section.label}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="lg:min-w-0">
+            <form id="product-form" onSubmit={handleSubmit} className="space-y-6 pb-20 lg:pb-6">
+              {/* Basic Information */}
+              {activeSection === 'basic' && (
+                <div className="bg-white rounded-xl border border-gray-200 p-6">
+                  <div className="flex items-center gap-2 mb-6">
+                    <Info className="w-5 h-5 text-gray-400" />
+                    <h2 className="text-lg font-semibold text-gray-900">Основная информация</h2>
                   </div>
-                  
-                  <div className="grid grid-cols-2 gap-2">
-                    {formData.images?.map((url, index) => (
-                      <div key={index} className="relative group">
-                        <img
-                          src={url}
-                          alt={`Product ${index + 1}`}
-                          className="w-full h-24 object-cover rounded border"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement
-                            target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="%23f3f4f6"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="%236b7280">No Image</text></svg>'
-                          }}
+
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <div className="md:col-span-2">
+                      <Label htmlFor="name" className="text-sm font-medium text-gray-700">
+                        Название товара *
+                      </Label>
+                      <Input
+                        id="name"
+                        value={formData.name}
+                        onChange={(e) => handleInputChange('name', e.target.value)}
+                        placeholder="Введите название товара"
+                        className="mt-1"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="category" className="text-sm font-medium text-gray-700">
+                        Категория *
+                      </Label>
+                      <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
+                        <SelectTrigger className="mt-1">
+                          <SelectValue placeholder="Выберите категорию" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {CATEGORIES.map((category) => (
+                            <SelectItem key={category.value} value={category.value}>
+                              {category.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="brand" className="text-sm font-medium text-gray-700">
+                        Бренд
+                      </Label>
+                      <Input
+                        id="brand"
+                        value={formData.brand || ''}
+                        onChange={(e) => handleInputChange('brand', e.target.value)}
+                        placeholder="Название бренда"
+                        className="mt-1"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="price" className="text-sm font-medium text-gray-700">
+                        Цена *
+                      </Label>
+                      <Input
+                        id="price"
+                        type="number"
+                        value={formData.price}
+                        onChange={(e) => handleInputChange('price', parseFloat(e.target.value) || 0)}
+                        placeholder="0"
+                        className="mt-1"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="gender" className="text-sm font-medium text-gray-700">
+                        Пол
+                      </Label>
+                      <Select value={formData.gender || ''} onValueChange={(value) => handleInputChange('gender', value)}>
+                        <SelectTrigger className="mt-1">
+                          <SelectValue placeholder="Выберите пол" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {GENDERS.map((gender) => (
+                            <SelectItem key={gender.value} value={gender.value}>
+                              {gender.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="season" className="text-sm font-medium text-gray-700">
+                        Сезон
+                      </Label>
+                      <Select value={Array.isArray(formData.season) ? formData.season[0] || '' : (formData.season || '')} onValueChange={(value) => handleInputChange('season', value)}>
+                        <SelectTrigger className="mt-1">
+                          <SelectValue placeholder="Выберите сезон" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {SEASONS.map((season) => (
+                            <SelectItem key={season} value={season}>
+                              {season}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <Label htmlFor="description" className="text-sm font-medium text-gray-700">
+                        Описание
+                      </Label>
+                      <textarea
+                        id="description"
+                        value={formData.description || ''}
+                        onChange={(e) => handleInputChange('description', e.target.value)}
+                        placeholder="Опишите товар подробно"
+                        rows={4}
+                        className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-1 focus:ring-black focus:border-black"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="in_stock"
+                          checked={formData.in_stock}
+                          onChange={(e) => handleInputChange('in_stock', e.target.checked)}
+                          className="w-4 h-4 rounded border-gray-300 text-black focus:ring-black"
                         />
-                        <button
-                          type="button"
-                          onClick={() => removeImage(index)}
-                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          ×
-                        </button>
+                        <Label htmlFor="in_stock" className="text-sm font-medium text-gray-700">
+                          Товар в наличии
+                        </Label>
                       </div>
-                    ))}
+                    </div>
                   </div>
                 </div>
-              </LamodaCard>
+              )}
 
-              {/* Sizes */}
-              <LamodaCard className="p-6">
-                <h2 className="text-lg font-semibold mb-4">Размеры</h2>
-                <div className="flex flex-wrap gap-2">
-                  {SIZES.map(size => (
-                    <Badge
-                      key={size}
-                      variant={formData.sizes?.includes(size) ? "default" : "outline"}
-                      className="cursor-pointer"
-                      onClick={() => toggleSize(size)}
-                    >
-                      {size}
-                    </Badge>
-                  ))}
+              {/* Images Section */}
+              {activeSection === 'images' && (
+                <div className="bg-white rounded-xl border border-gray-200 p-6">
+                  <div className="flex items-center gap-2 mb-6">
+                    <ImageIcon className="w-5 h-5 text-gray-400" />
+                    <h2 className="text-lg font-semibold text-gray-900">Изображения</h2>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex gap-2">
+                      <Input
+                        value={newImageUrl}
+                        onChange={(e) => setNewImageUrl(e.target.value)}
+                        placeholder="Вставьте URL изображения"
+                        className="flex-1"
+                      />
+                      <LamodaButton type="button" onClick={addImage} className="bg-black text-white hover:bg-gray-800">
+                        <Plus className="w-4 h-4" />
+                      </LamodaButton>
+                    </div>
+
+                    {formData.images && formData.images.length > 0 && (
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {formData.images.map((image, index) => (
+                          <div key={index} className="relative group">
+                            <img
+                              src={image}
+                              alt={`Товар ${index + 1}`}
+                              className="w-full h-32 object-cover rounded-lg border border-gray-200"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeImage(index)}
+                              className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </LamodaCard>
+              )}
 
-              {/* Colors */}
-              <LamodaCard className="p-6">
-                <h2 className="text-lg font-semibold mb-4">Цвета</h2>
-                <div className="flex flex-wrap gap-2">
-                  {COLORS.map(color => (
-                    <Badge
-                      key={color}
-                      variant={formData.colors?.includes(color) ? "default" : "outline"}
-                      className="cursor-pointer"
-                      onClick={() => toggleColor(color)}
-                    >
-                      {color}
-                    </Badge>
-                  ))}
+              {/* Variants Section */}
+              {activeSection === 'variants' && (
+                <div className="bg-white rounded-xl border border-gray-200 p-6">
+                  <div className="flex items-center gap-2 mb-6">
+                    <Package className="w-5 h-5 text-gray-400" />
+                    <h2 className="text-lg font-semibold text-gray-900">Варианты товара</h2>
+                  </div>
+
+                  <div className="space-y-6">
+                    {/* Sizes */}
+                    <div>
+                      <Label className="text-sm font-medium text-gray-700 mb-3 block">Размеры</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {SIZES.map((size) => (
+                          <button
+                            key={size}
+                            type="button"
+                            onClick={() => toggleSize(size)}
+                            className={cn(
+                              "px-3 py-1 text-sm rounded-md border transition-colors",
+                              formData.sizes?.includes(size)
+                                ? "bg-black text-white border-black"
+                                : "bg-white text-gray-700 border-gray-300 hover:border-gray-400"
+                            )}
+                          >
+                            {size}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Colors */}
+                    <div>
+                      <Label className="text-sm font-medium text-gray-700 mb-3 block">Цвета</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {COLORS.map((color) => (
+                          <button
+                            key={color}
+                            type="button"
+                            onClick={() => toggleColor(color)}
+                            className={cn(
+                              "px-3 py-1 text-sm rounded-md border transition-colors",
+                              formData.colors?.includes(color)
+                                ? "bg-black text-white border-black"
+                                : "bg-white text-gray-700 border-gray-300 hover:border-gray-400"
+                            )}
+                          >
+                            {color}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </LamodaCard>
+              )}
 
-              {/* Tags & Season */}
-              <LamodaCard className="p-6">
-                <h2 className="text-lg font-semibold mb-4">Теги и сезон</h2>
-                
-                <div className="space-y-4">
-                  <div>
-                    <Label>Теги</Label>
+              {/* Tags Section */}
+              {activeSection === 'tags' && (
+                <div className="bg-white rounded-xl border border-gray-200 p-6">
+                  <div className="flex items-center gap-2 mb-6">
+                    <Tag className="w-5 h-5 text-gray-400" />
+                    <h2 className="text-lg font-semibold text-gray-900">Теги</h2>
+                  </div>
+
+                  <div className="space-y-4">
                     <div className="flex gap-2">
                       <Input
                         value={newTag}
                         onChange={(e) => setNewTag(e.target.value)}
-                        placeholder="платье, лето, новинка"
+                        placeholder="Введите тег"
+                        className="flex-1"
                         onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
                       />
-                      <LamodaButton type="button" onClick={addTag} size="sm">
+                      <LamodaButton type="button" onClick={addTag} className="bg-black text-white hover:bg-gray-800">
                         <Plus className="w-4 h-4" />
                       </LamodaButton>
                     </div>
-                    
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {formData.tags?.map(tag => (
-                        <Badge key={tag} variant="secondary" className="cursor-pointer" onClick={() => removeTag(tag)}>
-                          {tag} ×
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
 
-                  <div>
-                    <Label htmlFor="season">Сезон</Label>
-                    <Select value={formData.season as string || ''} onValueChange={(value) => handleInputChange('season', value)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Выберите сезон" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {SEASONS.map(season => (
-                          <SelectItem key={season} value={season}>
-                            {season}
-                          </SelectItem>
+                    {formData.tags && formData.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {formData.tags.map((tag) => (
+                          <Badge
+                            key={tag}
+                            variant="secondary"
+                            className="flex items-center gap-1 bg-gray-100 text-gray-700 hover:bg-gray-200"
+                          >
+                            {tag}
+                            <button
+                              type="button"
+                              onClick={() => removeTag(tag)}
+                              className="ml-1 hover:bg-gray-300 rounded-full p-0.5"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </Badge>
                         ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id="in_stock"
-                      checked={formData.in_stock}
-                      onChange={(e) => handleInputChange('in_stock', e.target.checked)}
-                    />
-                    <Label htmlFor="in_stock">В наличии</Label>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </LamodaCard>
-
-              {/* Category Specific Fields */}
-              {formData.category === 'tshirt' && (
-                <LamodaCard className="p-6">
-                  <h2 className="text-lg font-semibold mb-4">Параметры футболки</h2>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="material">Материал</Label>
-                      <Input
-                        id="material"
-                        value={formData.material || ''}
-                        onChange={(e) => handleInputChange('material', e.target.value)}
-                        placeholder="Хлопок — 100%"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="sleeve_length">Длина рукава</Label>
-                      <Select value={formData.sleeve_length || ''} onValueChange={(value) => handleInputChange('sleeve_length', value)}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Выберите длину рукава" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="short">Короткий</SelectItem>
-                          <SelectItem value="long">Длинный</SelectItem>
-                          <SelectItem value="3/4">3/4</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </LamodaCard>
               )}
-
-              {formData.category === 'pants' && (
-                <LamodaCard className="p-6">
-                  <h2 className="text-lg font-semibold mb-4">Параметры брюк</h2>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="waist_type">Тип пояса</Label>
-                      <Select value={formData.waist_type || ''} onValueChange={(value) => handleInputChange('waist_type', value)}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Выберите тип пояса" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="high">Высокий</SelectItem>
-                          <SelectItem value="mid">Средний</SelectItem>
-                          <SelectItem value="low">Низкий</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="length">Длина</Label>
-                      <Select value={formData.length || ''} onValueChange={(value) => handleInputChange('length', value)}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Выберите длину" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="full">Полная</SelectItem>
-                          <SelectItem value="cropped">Укороченная</SelectItem>
-                          <SelectItem value="short">Короткая</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </LamodaCard>
-              )}
-            </div>
+            </form>
           </div>
+        </div>
+      </div>
 
-          {/* Submit */}
-          <div className="flex justify-end gap-4">
-            <LamodaButton 
-              type="button" 
-              variant="outline" 
-              onClick={() => router.back()}
-            >
-              Отмена
-            </LamodaButton>
-            <LamodaButton 
-              type="submit" 
-              disabled={isLoading}
-              className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-            >
-              {isLoading ? (
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <Save className="w-4 h-4" />
-              )}
-              {isLoading ? 'Создание...' : 'Создать товар'}
-            </LamodaButton>
-          </div>
-        </form>
+      {/* Mobile Navigation Bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
+        <div className="grid grid-cols-4 gap-1">
+          {sections.map((section, index) => {
+            const Icon = section.icon
+            const isActive = activeSection === section.id
+            const isPassed = sections.findIndex(s => s.id === activeSection) > index
+            
+            return (
+              <button
+                key={section.id}
+                onClick={() => setActiveSection(section.id)}
+                className={cn(
+                  "flex flex-col items-center gap-1 px-2 py-3 transition-colors",
+                  isActive 
+                    ? "text-black bg-gray-50" 
+                    : isPassed 
+                    ? "text-green-600"
+                    : "text-gray-400"
+                )}
+              >
+                <div className={cn(
+                  "w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium border-2 transition-colors",
+                  isActive 
+                    ? "bg-black text-white border-black"
+                    : isPassed
+                    ? "bg-green-600 text-white border-green-600"
+                    : "border-gray-300 text-gray-400"
+                )}>
+                  {isPassed ? '✓' : index + 1}
+                </div>
+                <span className="text-xs font-medium truncate">{section.label}</span>
+              </button>
+            )
+          })}
+        </div>
+        
+        {/* Mobile action buttons */}
+        <div className="flex gap-2 p-3 border-t border-gray-100">
+          <LamodaButton 
+            variant="outline" 
+            onClick={() => router.back()}
+            className="flex-1"
+          >
+            Отмена
+          </LamodaButton>
+          <LamodaButton 
+            type="submit" 
+            form="product-form"
+            disabled={isLoading}
+            className="flex-1 bg-black text-white hover:bg-gray-800"
+          >
+            {isLoading ? 'Создание...' : 'Создать'}
+          </LamodaButton>
+        </div>
       </div>
     </div>
   )

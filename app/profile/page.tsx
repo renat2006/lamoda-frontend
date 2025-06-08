@@ -277,7 +277,7 @@ export default function ProfilePage() {
                     <div className="flex items-center gap-2">
                       <CheckCircle className="h-4 w-4 text-green-600" />
                       <span className="text-green-600 text-sm">Проверенный селлер</span>
-                    </div>
+                  </div>
                   </div>
                 </div>
               </div>
