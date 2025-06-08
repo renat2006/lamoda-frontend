@@ -406,7 +406,7 @@ function UserMenu() {
         </div>
         <ChevronDown className="h-3 w-3 text-foreground/40 hidden md:block" />
       </Button>
-
+      
       {isOpen && (
         <>
           {/* Mobile Dropdown */}
@@ -424,30 +424,30 @@ function UserMenu() {
                     {user?.inn || '...'}
                   </div>
                 </div>
+                </div>
               </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Link href="/profile" className="flex items-center gap-4 p-4 active:bg-muted/50 transition-colors">
-                <User className="h-5 w-5 text-foreground/40" />
-                <span className="text-foreground">Профиль</span>
-              </Link>
-              <Link href="/settings" className="flex items-center gap-4 p-4 active:bg-muted/50 transition-colors">
-                <Settings className="h-5 w-5 text-foreground/40" />
-                <span className="text-foreground">Настройки</span>
-              </Link>
-              <Link href="/help" className="flex items-center gap-4 p-4 active:bg-muted/50 transition-colors">
-                <BookOpen className="h-5 w-5 text-foreground/40" />
-                <span className="text-foreground">Помощь</span>
-              </Link>
-              <div className="border-t border-border mt-4 pt-4">
+              
+              <div className="space-y-2">
+                <Link href="/profile" className="flex items-center gap-4 p-4 active:bg-muted/50 transition-colors">
+                  <User className="h-5 w-5 text-foreground/40" />
+                  <span className="text-foreground">Профиль</span>
+                </Link>
+                <Link href="/settings" className="flex items-center gap-4 p-4 active:bg-muted/50 transition-colors">
+                  <Settings className="h-5 w-5 text-foreground/40" />
+                  <span className="text-foreground">Настройки</span>
+                </Link>
+                <Link href="/help" className="flex items-center gap-4 p-4 active:bg-muted/50 transition-colors">
+                  <BookOpen className="h-5 w-5 text-foreground/40" />
+                  <span className="text-foreground">Помощь</span>
+                </Link>
+                <div className="border-t border-border mt-4 pt-4">
                 <button 
                   onClick={handleLogout}
                   className="flex items-center gap-4 p-4 active:bg-muted/50 transition-colors w-full text-left"
                 >
-                  <LogOut className="h-5 w-5 text-foreground/40" />
-                  <span className="text-foreground">Выйти</span>
-                </button>
+                    <LogOut className="h-5 w-5 text-foreground/40" />
+                    <span className="text-foreground">Выйти</span>
+                  </button>
               </div>
             </div>
           </div>
@@ -648,7 +648,7 @@ function MobileHeader() {
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" className="flex-1 h-8" asChild>
                     <Link href="/profile">
-                      <Settings className="h-3 w-3 mr-1" />
+                    <Settings className="h-3 w-3 mr-1" />
                       Профиль
                     </Link>
                   </Button>

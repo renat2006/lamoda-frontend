@@ -177,9 +177,9 @@ class AuthService {
       console.error('Logout error:', error)
     } finally {
       // Always clear tokens and redirect, even if server request fails
-      this.clearTokens()
-      if (typeof window !== 'undefined') {
-        window.location.href = '/login'
+    this.clearTokens()
+    if (typeof window !== 'undefined') {
+      window.location.href = '/login'
       }
     }
   }
